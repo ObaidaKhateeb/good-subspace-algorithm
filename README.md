@@ -24,7 +24,7 @@ Output:
 - **Visualization** (if the input is 2D or 3D) which includes the points and the fitted line/plane.
 
 ## Usage 
-By CLI, using the following formats:
+By CLI, using the following format:
 
 ```bash
 python good_subspace.py --k <target_dimension> --epsilon <epsilon> [--n <num_points> --d <dimension>] [--points <path_to_txt_file>]
