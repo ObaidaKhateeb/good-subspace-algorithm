@@ -3,15 +3,15 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D #included in case matplotlib can't handle 3D 
 import matplotlib.patches as mpatches
 import argparse
-import os 
-np.random.seed(42)  # For reproducibility
+import os
 
 #A function that extracts points from a txt file 
+#Input: a path for a txt file containing points (each point should be on a separate line)
+#Output: a numpy array of the extracted points
 def load_points(file_path):
     lines = os.path.join(file_path)
     with open(lines, 'r') as f:
         points = [list(map(float, line.strip().split())) for line in f if line.strip()]
-    print(points)
     return np.array(points)
 
 # A function that executes the Good Subspace algorithm
@@ -264,29 +264,26 @@ def main(k, epsilon, n=None, d=None, points_path=None):
     print(f"Allowed Bound: {(1 + epsilon) ** k:.4f} × {optimal_cost:.6f} = {bound:.6f}")
     print(f"RD Cost: {approx_cost:.6f}")
     if approx_cost <= bound:
-        return True
+        print("     ✅ The Algorithm satisfies the guarantee.")
     else:
-        return False
+        print(f"     ❌ The Algorithm does not satisfy the guarantee by {approx_cost - bound:.6f}.")
+
+    #Visualizing the results (If applicable)
+    if P.shape[1] == 3 and k == 2:
+        visualize_plane_3d(P, basis)
+    elif P.shape[1] == 3 and k == 1:
+        visualize_line_3d(P, basis)
+    elif P.shape[1] == 2 and k == 1:
+        visualize_line_2d(P, basis)
 
 
 if __name__ == "__main__":
-    results = []
-    for k_val in [1,2]:
-        counter = 0
-        for _ in range(100):
-            return_value = main(k=k_val, epsilon=0.2, n=100, d=3, points_path=None)
-            if return_value:
-                counter += 1
-        results.append((k_val, counter))
-    #visualize results using a plot
-    nums, counts = zip(*results)
-    plt.plot(nums, counts, marker='o')
-    plt.xlabel('k value')
-    plt.ylabel('Success Rate')
-    plt.title('Good Subspace Success Rate in the 3D case Between k=1 and k=2')
-    plt.xscale('log')
-    plt.xticks(nums, rotation=45)
-    plt.grid(True)
-    plt.tight_layout()
-    plt.show()
-        
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--n", type=int, default=100)
+    parser.add_argument("--d", type=int)
+    parser.add_argument("--k", type=int, required=True)
+    parser.add_argument("--epsilon", type=float, default=0.1)
+    parser.add_argument("--points", type=str)
+
+    args = parser.parse_args()
+    main(args.k, args.epsilon, n=args.n, d=args.d, points_path=args.points)
