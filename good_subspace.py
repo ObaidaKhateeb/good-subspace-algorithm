@@ -227,26 +227,32 @@ def visualize_line_3d(P, basis):
 def main(k, epsilon, n=None, d=None, points_path=None):
     #np.random.seed(42)
 
+    #Ensure epsilon is given and valid
+    if epsilon is None or epsilon <= 0 or epsilon >= 1:
+        raise ValueError("Epsilon must be in the range (0, 1).")
+
     #Extracts or generate points 
     if points_path:
         P = load_points(points_path)
         n, d = P.shape
+        if k >= d:
+            raise ValueError("k must be less than d.")
+        elif n < 0 or d < 0 or k <= 0:
+            raise ValueError("n, d, and k must be positive integers.")
     else:
         if n is None or d is None:
             raise ValueError("When points are not provided, both n and d are required.")
+        if k >= d:
+            raise ValueError("k must be less than d.")
+        elif n < 0 or d < 0 or k <= 0:
+            raise ValueError("n, d, and k must be positive integers.")
         base_plane = orthonormalize(np.random.randn(k, d))
         coeffs = np.random.randn(n, k)
         clean_points = coeffs @ base_plane
         noise = 0.05 * np.random.randn(n, d)
         P = clean_points + noise
 
-    #Ensuring valid parameters
-    if k >= d:
-        raise ValueError("k must be less than d.")
-    elif n < 0 or d < 0 or k < 0:
-        raise ValueError("n, d, and k must be positive integers.")
-    elif epsilon <= 0 or epsilon >= 1:
-        raise ValueError("Epsilon must be in the range (0, 1).")
+
 
     #Fitting k-dimensional subspace 
     basis = good_subspace(P, k, epsilon)
