@@ -116,7 +116,8 @@ def orthonormalize(V):
         if norm > 1e-10:
             Q.append(v / norm)
         else:
-            return orthonormalize(V) #retry, for extreme cases where vectors are nearly linearly dependent
+            V_perturbed = V + 1e-8 * np.random.randn(*V.shape)
+            return orthonormalize(V_perturbed) #retry, for extreme cases where vectors are nearly linearly dependent
     return np.array(Q)
 
 # A function that prints the parametric equation of the fitted subspace
